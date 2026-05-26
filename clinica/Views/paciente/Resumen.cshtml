@@ -1,0 +1,94 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model ResumenDia
+@{
+    ViewData["Title"] = "Resumen del Día";
+}
+
+<div class="pg-header">
+    <div>
+        <h1>Resumen del Día</h1>
+        <p class="sub">@DateTime.Today.ToString("dddd, dd 'de' MMMM 'de' yyyy")</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline">← Volver</a>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi">
+        <span class="kpi-lbl">Total Pacientes</span>
+        <span class="kpi-val">@Model.TotalPacientes</span>
+    </div>
+    <div class="kpi kpi-hi">
+        <span class="kpi-lbl">Total Recaudado</span>
+        <span class="kpi-val tab">$@Model.TotalRecaudado.ToString("N0")</span>
+    </div>
+    <div class="kpi">
+        <span class="kpi-lbl">Con Previsión</span>
+        <span class="kpi-val">@Model.ConPrevision</span>
+        <span class="kpi-sub">Descuentos: $@Model.TotalDescuentos.ToString("N0")</span>
+    </div>
+    <div class="kpi">
+        <span class="kpi-lbl">Sin Previsión</span>
+        <span class="kpi-val">@Model.SinPrevision</span>
+    </div>
+</div>
+
+<div class="two-col">
+    <div class="card">
+        <h2>Por Tipo de Atención</h2>
+        <table class="tbl">
+            <thead>
+                <tr><th>Tipo</th><th>Cant.</th><th class="tr">Costo Base</th><th class="tr">Recaudado</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge bd-consultageneral">Consulta General</span></td>
+                    <td>@Model.ConsultasGenerales</td>
+                    <td class="tr tab">$10.000</td>
+                    <td class="tr tab">$@Model.Pacientes.Where(p => p.TipoAtencion == TipoAtencion.ConsultaGeneral).Sum(p => p.CostoFinal).ToString("N0")</td>
+                </tr>
+                <tr>
+                    <td><span class="badge bd-urgencia">Urgencia</span></td>
+                    <td>@Model.Urgencias</td>
+                    <td class="tr tab">$25.000</td>
+                    <td class="tr tab">$@Model.Pacientes.Where(p => p.TipoAtencion == TipoAtencion.Urgencia).Sum(p => p.CostoFinal).ToString("N0")</td>
+                </tr>
+                <tr>
+                    <td><span class="badge bd-examen">Examen</span></td>
+                    <td>@Model.Examenes</td>
+                    <td class="tr tab">$15.000</td>
+                    <td class="tr tab">$@Model.Pacientes.Where(p => p.TipoAtencion == TipoAtencion.Examen).Sum(p => p.CostoFinal).ToString("N0")</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Detalle de Pacientes</h2>
+        <ul class="pat-list">
+            @foreach (var p in Model.Pacientes)
+            {
+                <li class="pat-item">
+                    <div>
+                        <strong>@p.NombreCompleto</strong>
+                        <span class="muted xs"> — @p.Rut</span>
+                    </div>
+                    <div class="pat-cost">
+                        <span class="badge bd-@p.TipoAtencion.ToString().ToLower() xs">
+                            @(p.TipoAtencion == TipoAtencion.ConsultaGeneral ? "Consulta" :
+                              p.TipoAtencion == TipoAtencion.Urgencia ? "Urgencia" : "Examen")
+                        </span>
+                        <strong class="tab">$@p.CostoFinal.ToString("N0")</strong>
+                        @if (p.TienePrevision)
+                        {
+                            <span class="ok xs">−30%</span>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

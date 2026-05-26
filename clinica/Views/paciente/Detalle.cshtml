@@ -1,0 +1,77 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model Paciente
+@{
+    ViewData["Title"] = $"Detalle — {Model.NombreCompleto}";
+}
+
+<div class="pg-header">
+    <div>
+        <h1>@Model.NombreCompleto</h1>
+        <p class="sub">RUT: @Model.Rut — @Model.FechaAtencion.ToString("dd/MM/yyyy")</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline">← Volver</a>
+</div>
+
+<div class="det-grid">
+    <div class="card">
+        <h2>Datos Personales</h2>
+        <dl class="dl">
+            <dt>Nombre completo</dt>
+            <dd>@Model.NombreCompleto</dd>
+            <dt>RUT</dt>
+            <dd>@Model.Rut</dd>
+            <dt>Edad</dt>
+            <dd>@Model.Edad años</dd>
+            <dt>Teléfono</dt>
+            <dd>@Model.Telefono</dd>
+        </dl>
+    </div>
+
+    <div class="card">
+        <h2>Atención Médica</h2>
+        <dl class="dl">
+            <dt>Tipo de Atención</dt>
+            <dd>
+                <span class="badge bd-@Model.TipoAtencion.ToString().ToLower()">
+                    @(Model.TipoAtencion == TipoAtencion.ConsultaGeneral ? "Consulta General" :
+                      Model.TipoAtencion == TipoAtencion.Urgencia ? "Urgencia" : "Examen")
+                </span>
+            </dd>
+            <dt>Diagnóstico</dt>
+            <dd>@(Model.Diagnostico ?? "No especificado")</dd>
+            <dt>Fecha</dt>
+            <dd>@Model.FechaAtencion.ToString("dd/MM/yyyy")</dd>
+        </dl>
+    </div>
+
+    <div class="card card-fin">
+        <h2>Liquidación de Cobro</h2>
+        <dl class="dl dl-fin">
+            <dt>Costo Base</dt>
+            <dd class="tab">$@Model.CostoBase.ToString("N0")</dd>
+            <dt>Previsión</dt>
+            <dd>
+                @if (Model.TienePrevision)
+                {
+                    <span class="badge bd-si">Sí — 30% descuento</span>
+                }
+                else
+                {
+
+                    <span class="badge bd-no">No</span>
+                }
+            </dd>
+            @if (Model.Descuento > 0)
+            {
+                <dt>Descuento Aplicado</dt>
+                <dd class="tab ok">−$@Model.Descuento.ToString("N0")</dd>
+            }
+            <dt>Total a Pagar</dt>
+            <dd class="tab total-hi">$@Model.CostoFinal.ToString("N0")</dd>
+        </dl>
+    </div>
+</div>

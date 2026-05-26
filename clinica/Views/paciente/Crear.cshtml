@@ -1,0 +1,111 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model Paciente
+@{
+    ViewData["Title"] = "Registrar Paciente";
+}
+
+<div class="pg-header">
+    <div>
+        <h1>Registrar Nuevo Paciente</h1>
+        <p class="sub">Complete todos los campos requeridos</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline">← Volver</a>
+</div>
+
+<div class="form-card">
+    <form asp-action="Crear" method="post">
+        @Html.AntiForgeryToken()
+
+        <section class="form-sec">
+            <h2>Datos Personales</h2>
+            <div class="form-grid">
+                <div class="fg">
+                    <label asp-for="Nombre">Nombre *</label>
+                    <input asp-for="Nombre" placeholder="Ej: María" required />
+                    <span asp-validation-for="Nombre" class="ferr"></span>
+                </div>
+                <div class="fg">
+                    <label asp-for="Apellido">Apellido *</label>
+                    <input asp-for="Apellido" placeholder="Ej: González" required />
+                    <span asp-validation-for="Apellido" class="ferr"></span>
+                </div>
+                <div class="fg">
+                    <label asp-for="Edad">Edad * <span class="muted xs">(mayor a 0)</span></label>
+                    <input asp-for="Edad" type="number" min="1" max="120" required />
+                    <span asp-validation-for="Edad" class="ferr"></span>
+                </div>
+                <div class="fg">
+                    <label asp-for="Rut">RUT *</label>
+                    <input asp-for="Rut" placeholder="Ej: 12.345.678-9" required />
+                    <span asp-validation-for="Rut" class="ferr"></span>
+                </div>
+                <div class="fg">
+                    <label asp-for="Telefono">Teléfono</label>
+                    <input asp-for="Telefono" placeholder="Ej: +56912345678" />
+                </div>
+                <div class="fg">
+                    <label asp-for="FechaAtencion">Fecha de Atención</label>
+                    <input asp-for="FechaAtencion" type="date" />
+                </div>
+            </div>
+        </section>
+
+        <section class="form-sec">
+            <h2>Datos Médicos</h2>
+            <div class="form-grid">
+                <div class="fg">
+                    <label asp-for="TipoAtencion">Tipo de Atención *</label>
+                    <select asp-for="TipoAtencion" id="sel-tipo">
+                        <option value="">— Seleccione —</option>
+                        <option value="ConsultaGeneral">Consulta General — $10.000</option>
+                        <option value="Urgencia">Urgencia — $25.000</option>
+                        <option value="Examen">Examen — $15.000</option>
+                    </select>
+                    <span asp-validation-for="TipoAtencion" class="ferr"></span>
+                </div>
+                <div class="fg fg-full">
+                    <label asp-for="Diagnostico">Diagnóstico / Motivo</label>
+                    <input asp-for="Diagnostico" placeholder="Ej: Dolor de cabeza intenso" />
+                </div>
+                <div class="fg fg-full">
+                    <label class="chk-lbl">
+                        <input asp-for="TienePrevision" type="checkbox" id="chk-prev" />
+                        <span>Tiene previsión — aplica <strong>30% de descuento</strong></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="cost-box">
+                <span class="cost-lbl">Costo estimado:</span>
+                <span class="cost-val" id="cost-val">Seleccione tipo de atención</span>
+            </div>
+        </section>
+
+        <div class="form-act">
+            <a asp-action="Index" class="btn btn-outline">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Registrar Paciente</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const COSTOS = { ConsultaGeneral: 10000, Urgencia: 25000, Examen: 15000 };
+    const sel  = document.getElementById('sel-tipo');
+    const chk  = document.getElementById('chk-prev');
+    const disp = document.getElementById('cost-val');
+    function fmt(n) { return n.toLocaleString('es-CL'); }
+    function actualizar() {
+      const tipo = sel.value;
+      if (!tipo || !COSTOS[tipo]) { disp.textContent = 'Seleccione tipo de atención'; return; }
+      const base  = COSTOS[tipo];
+      const final = chk.checked ? Math.round(base * 0.70) : base;
+      const desc  = chk.checked ? `  (−30% = −$${fmt(base - final)})` : '';
+      disp.textContent = $${fmt(final)}${desc};
+    }
+    sel.addEventListener('change', actualizar);
+    chk.addEventListener('change', actualizar);
+</script>

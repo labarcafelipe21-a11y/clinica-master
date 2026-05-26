@@ -1,0 +1,82 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<Paciente>
+@{
+    ViewData["Title"] = "Pacientes";
+}
+
+<div class="pg-header">
+    <div>
+        <h1>Lista de Pacientes</h1>
+        <p class="sub">@Model.Count pacientes — @DateTime.Today.ToString("dd/MM/yyyy")</p>
+    </div>
+    <a asp-action="Crear" class="btn btn-primary">+ Nuevo Paciente</a>
+</div>
+
+<div class="tbl-wrap">
+    <table class="tbl">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Paciente</th>
+                <th>RUT</th>
+                <th>Edad</th>
+                <th>Tipo Atención</th>
+                <th>Previsión</th>
+                <th class="tr">Costo Base</th>
+                <th class="tr">Descuento</th>
+                <th class="tr">Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td class="muted">@p.Id</td>
+                    <td>
+                        <strong>@p.NombreCompleto</strong><br>
+                        <span class="muted xs">@p.Telefono</span>
+                    </td>
+                    <td>@p.Rut</td>
+                    <td>@p.Edad a.</td>
+                    <td>
+                        <span class="badge bd-@p.TipoAtencion.ToString().ToLower()">
+                            @(p.TipoAtencion == TipoAtencion.ConsultaGeneral ? "Consulta" :
+                              p.TipoAtencion == TipoAtencion.Urgencia ? "Urgencia" : "Examen")
+                        </span>
+                    </td>
+                    <td>
+                        @if (p.TienePrevision)
+                        {
+                            <span class="badge bd-si">Sí</span>
+                        }
+                        else
+                        {
+
+                            <span class="badge bd-no">No</span>
+                        }
+                    </td>
+                    <td class="tr tab">$@p.CostoBase.ToString("N0")</td>
+                    <td class="tr tab @(p.Descuento > 0 ? "ok" : "")">
+                        @(p.Descuento > 0 ? "-$" + p.Descuento.ToString("N0") : "—")
+                    </td>
+                    <td class="tr tab"><strong>$@p.CostoFinal.ToString("N0")</strong></td>
+                    <td><a asp-action="Detalle" asp-route-id="@p.Id" class="lnk">Ver</a></td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="8" class="tr"><strong>Total Recaudado:</strong></td>
+                <td class="tr tab total">
+                    <strong>$@Model.Sum(p => p.CostoFinal).ToString("N0")</strong>
+                </td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
